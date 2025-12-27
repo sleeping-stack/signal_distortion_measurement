@@ -1,7 +1,7 @@
 # FIXED
 
 main.o: ../main.c \
- D:/ccs_workspace_sti/signal_distortion_measurement/USER/adc.h \
+ D:/workspace_ccs/signal_distortion_measurement/USER/adc.h \
  ti_msp_dl_config.h \
  C:/ti/mspm0_sdk_2_00_01_00/source/ti/devices/msp/msp.h \
  C:/ti/mspm0_sdk_2_00_01_00/source/ti/devices/DeviceFamily.h \
@@ -75,13 +75,13 @@ main.o: ../main.c \
  C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/dl_wwdt.h \
  C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/m0p/dl_interrupt.h \
  C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/m0p/dl_systick.h \
- D:/ccs_workspace_sti/signal_distortion_measurement/USER/calculate_thd.h \
- D:/ccs_workspace_sti/signal_distortion_measurement/USER/fft.h \
+ D:/workspace_ccs/signal_distortion_measurement/USER/calculate_thd.h \
+ D:/workspace_ccs/signal_distortion_measurement/USER/fft.h \
  C:/ti/mspm0_sdk_2_00_01_00/source/third_party/CMSIS/DSP/Include/arm_math.h \
  C:/ti/mspm0_sdk_2_00_01_00/source/third_party/CMSIS/Core/Include/cmsis_compiler.h \
- D:/ccs_workspace_sti/signal_distortion_measurement/USER/uart.h \
- D:/ccs_workspace_sti/signal_distortion_measurement/USER/delay.h
-D:/ccs_workspace_sti/signal_distortion_measurement/USER/adc.h:
+ D:/workspace_ccs/signal_distortion_measurement/USER/uart.h \
+ D:/workspace_ccs/signal_distortion_measurement/USER/delay.h
+D:/workspace_ccs/signal_distortion_measurement/USER/adc.h:
 ti_msp_dl_config.h:
 C:/ti/mspm0_sdk_2_00_01_00/source/ti/devices/msp/msp.h:
 C:/ti/mspm0_sdk_2_00_01_00/source/ti/devices/DeviceFamily.h:
@@ -155,9 +155,9 @@ C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/dl_vref.h:
 C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/dl_wwdt.h:
 C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/m0p/dl_interrupt.h:
 C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/m0p/dl_systick.h:
-D:/ccs_workspace_sti/signal_distortion_measurement/USER/calculate_thd.h:
-D:/ccs_workspace_sti/signal_distortion_measurement/USER/fft.h:
+D:/workspace_ccs/signal_distortion_measurement/USER/calculate_thd.h:
+D:/workspace_ccs/signal_distortion_measurement/USER/fft.h:
 C:/ti/mspm0_sdk_2_00_01_00/source/third_party/CMSIS/DSP/Include/arm_math.h:
 C:/ti/mspm0_sdk_2_00_01_00/source/third_party/CMSIS/Core/Include/cmsis_compiler.h:
-D:/ccs_workspace_sti/signal_distortion_measurement/USER/uart.h:
-D:/ccs_workspace_sti/signal_distortion_measurement/USER/delay.h:
+D:/workspace_ccs/signal_distortion_measurement/USER/uart.h:
+D:/workspace_ccs/signal_distortion_measurement/USER/delay.h:

@@ -143,7 +143,7 @@ all: $(OBJS) $(GEN_CMDS)
 signal_distortion_measurement.out: $(OBJS) $(GEN_CMDS)
 	@echo 'Building target: "$@"'
 	@echo 'Invoking: Arm Linker'
-	"D:/software_code/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.4.LTS/bin/tiarmclang.exe" @"device.opt"  -march=thumbv6m -mcpu=cortex-m0plus -mfloat-abi=soft -mlittle-endian -mthumb -O0 -gdwarf-3 -Wl,-m"signal_distortion_measurement.map" -Wl,--heap_size=1024 -Wl,--stack_size=1024 -Wl,-i"C:/ti/mspm0_sdk_2_00_01_00/source" -Wl,-i"D:/ccs_workspace_sti/signal_distortion_measurement" -Wl,-i"D:/ccs_workspace_sti/signal_distortion_measurement/Debug/syscfg" -Wl,-i"D:/software_code/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.4.LTS/lib" -Wl,--diag_wrap=off -Wl,--display_error_number -Wl,--warn_sections -Wl,--xml_link_info="signal_distortion_measurement_linkInfo.xml" -Wl,--rom_model -o "signal_distortion_measurement.out" $(ORDERED_OBJS)
+	"D:/software_code/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.4.LTS/bin/tiarmclang.exe" @"device.opt"  -march=thumbv6m -mcpu=cortex-m0plus -mfloat-abi=soft -mlittle-endian -mthumb -O0 -gdwarf-3 -Wl,-m"signal_distortion_measurement.map" -Wl,--heap_size=1024 -Wl,--stack_size=1024 -Wl,-i"C:/ti/mspm0_sdk_2_00_01_00/source" -Wl,-i"D:/workspace_ccs/signal_distortion_measurement" -Wl,-i"D:/workspace_ccs/signal_distortion_measurement/Debug/syscfg" -Wl,-i"D:/software_code/ti/ccs/tools/compiler/ti-cgt-armllvm_4.0.4.LTS/lib" -Wl,--diag_wrap=off -Wl,--display_error_number -Wl,--warn_sections -Wl,--xml_link_info="signal_distortion_measurement_linkInfo.xml" -Wl,--rom_model -o "signal_distortion_measurement.out" $(ORDERED_OBJS)
 	@echo 'Finished building target: "$@"'
 	@echo ' '
 
