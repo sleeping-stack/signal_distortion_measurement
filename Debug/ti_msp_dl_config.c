@@ -41,7 +41,6 @@
 #include "ti_msp_dl_config.h"
 
 DL_TimerG_backupConfig gTIMER_0Backup;
-DL_UART_Main_backupConfig gUART_BIUTEETHBackup;
 
 /*
  *  ======== SYSCFG_DL_init ========
@@ -54,13 +53,13 @@ SYSCONFIG_WEAK void SYSCFG_DL_init(void)
     /* Module-Specific Initializations*/
     SYSCFG_DL_SYSCTL_init();
     SYSCFG_DL_TIMER_0_init();
-    SYSCFG_DL_UART_0_init();
     SYSCFG_DL_UART_BIUTEETH_init();
+    SYSCFG_DL_UART_0_init();
     SYSCFG_DL_ADC12_0_init();
     SYSCFG_DL_DMA_init();
     /* Ensure backup structures have no valid state */
 	gTIMER_0Backup.backupRdy 	= false;
-	gUART_BIUTEETHBackup.backupRdy 	= false;
+
 
 }
 /*
@@ -72,7 +71,6 @@ SYSCONFIG_WEAK bool SYSCFG_DL_saveConfiguration(void)
     bool retStatus = true;
 
 	retStatus &= DL_TimerG_saveConfiguration(TIMER_0_INST, &gTIMER_0Backup);
-	retStatus &= DL_UART_Main_saveConfiguration(UART_BIUTEETH_INST, &gUART_BIUTEETHBackup);
 
     return retStatus;
 }
@@ -83,7 +81,6 @@ SYSCONFIG_WEAK bool SYSCFG_DL_restoreConfiguration(void)
     bool retStatus = true;
 
 	retStatus &= DL_TimerG_restoreConfiguration(TIMER_0_INST, &gTIMER_0Backup, false);
-	retStatus &= DL_UART_Main_restoreConfiguration(UART_BIUTEETH_INST, &gUART_BIUTEETHBackup);
 
     return retStatus;
 }
@@ -93,16 +90,16 @@ SYSCONFIG_WEAK void SYSCFG_DL_initPower(void)
     DL_GPIO_reset(GPIOA);
     DL_GPIO_reset(GPIOB);
     DL_TimerG_reset(TIMER_0_INST);
-    DL_UART_Main_reset(UART_0_INST);
     DL_UART_Main_reset(UART_BIUTEETH_INST);
+    DL_UART_Main_reset(UART_0_INST);
     DL_ADC12_reset(ADC12_0_INST);
 
 
     DL_GPIO_enablePower(GPIOA);
     DL_GPIO_enablePower(GPIOB);
     DL_TimerG_enablePower(TIMER_0_INST);
-    DL_UART_Main_enablePower(UART_0_INST);
     DL_UART_Main_enablePower(UART_BIUTEETH_INST);
+    DL_UART_Main_enablePower(UART_0_INST);
     DL_ADC12_enablePower(ADC12_0_INST);
 
     delay_cycles(POWER_STARTUP_DELAY);
@@ -112,13 +109,13 @@ SYSCONFIG_WEAK void SYSCFG_DL_GPIO_init(void)
 {
 
     DL_GPIO_initPeripheralOutputFunction(
-        GPIO_UART_0_IOMUX_TX, GPIO_UART_0_IOMUX_TX_FUNC);
-    DL_GPIO_initPeripheralInputFunction(
-        GPIO_UART_0_IOMUX_RX, GPIO_UART_0_IOMUX_RX_FUNC);
-    DL_GPIO_initPeripheralOutputFunction(
         GPIO_UART_BIUTEETH_IOMUX_TX, GPIO_UART_BIUTEETH_IOMUX_TX_FUNC);
     DL_GPIO_initPeripheralInputFunction(
         GPIO_UART_BIUTEETH_IOMUX_RX, GPIO_UART_BIUTEETH_IOMUX_RX_FUNC);
+    DL_GPIO_initPeripheralOutputFunction(
+        GPIO_UART_0_IOMUX_TX, GPIO_UART_0_IOMUX_TX_FUNC);
+    DL_GPIO_initPeripheralInputFunction(
+        GPIO_UART_0_IOMUX_RX, GPIO_UART_0_IOMUX_RX_FUNC);
 
 }
 
@@ -195,6 +192,38 @@ SYSCONFIG_WEAK void SYSCFG_DL_TIMER_0_init(void) {
 
 
 
+static const DL_UART_Main_ClockConfig gUART_BIUTEETHClockConfig = {
+    .clockSel    = DL_UART_MAIN_CLOCK_BUSCLK,
+    .divideRatio = DL_UART_MAIN_CLOCK_DIVIDE_RATIO_1
+};
+
+static const DL_UART_Main_Config gUART_BIUTEETHConfig = {
+    .mode        = DL_UART_MAIN_MODE_NORMAL,
+    .direction   = DL_UART_MAIN_DIRECTION_TX_RX,
+    .flowControl = DL_UART_MAIN_FLOW_CONTROL_NONE,
+    .parity      = DL_UART_MAIN_PARITY_NONE,
+    .wordLength  = DL_UART_MAIN_WORD_LENGTH_8_BITS,
+    .stopBits    = DL_UART_MAIN_STOP_BITS_ONE
+};
+
+SYSCONFIG_WEAK void SYSCFG_DL_UART_BIUTEETH_init(void)
+{
+    DL_UART_Main_setClockConfig(UART_BIUTEETH_INST, (DL_UART_Main_ClockConfig *) &gUART_BIUTEETHClockConfig);
+
+    DL_UART_Main_init(UART_BIUTEETH_INST, (DL_UART_Main_Config *) &gUART_BIUTEETHConfig);
+    /*
+     * Configure baud rate by setting oversampling and baud rate divisors.
+     *  Target baud rate: 9600
+     *  Actual baud rate: 9599.81
+     */
+    DL_UART_Main_setOversampling(UART_BIUTEETH_INST, DL_UART_OVERSAMPLING_RATE_16X);
+    DL_UART_Main_setBaudRateDivisor(UART_BIUTEETH_INST, UART_BIUTEETH_IBRD_40_MHZ_9600_BAUD, UART_BIUTEETH_FBRD_40_MHZ_9600_BAUD);
+
+
+
+    DL_UART_Main_enable(UART_BIUTEETH_INST);
+}
+
 static const DL_UART_Main_ClockConfig gUART_0ClockConfig = {
     .clockSel    = DL_UART_MAIN_CLOCK_BUSCLK,
     .divideRatio = DL_UART_MAIN_CLOCK_DIVIDE_RATIO_1
@@ -225,38 +254,6 @@ SYSCONFIG_WEAK void SYSCFG_DL_UART_0_init(void)
 
 
     DL_UART_Main_enable(UART_0_INST);
-}
-
-static const DL_UART_Main_ClockConfig gUART_BIUTEETHClockConfig = {
-    .clockSel    = DL_UART_MAIN_CLOCK_BUSCLK,
-    .divideRatio = DL_UART_MAIN_CLOCK_DIVIDE_RATIO_1
-};
-
-static const DL_UART_Main_Config gUART_BIUTEETHConfig = {
-    .mode        = DL_UART_MAIN_MODE_NORMAL,
-    .direction   = DL_UART_MAIN_DIRECTION_TX_RX,
-    .flowControl = DL_UART_MAIN_FLOW_CONTROL_NONE,
-    .parity      = DL_UART_MAIN_PARITY_NONE,
-    .wordLength  = DL_UART_MAIN_WORD_LENGTH_8_BITS,
-    .stopBits    = DL_UART_MAIN_STOP_BITS_ONE
-};
-
-SYSCONFIG_WEAK void SYSCFG_DL_UART_BIUTEETH_init(void)
-{
-    DL_UART_Main_setClockConfig(UART_BIUTEETH_INST, (DL_UART_Main_ClockConfig *) &gUART_BIUTEETHClockConfig);
-
-    DL_UART_Main_init(UART_BIUTEETH_INST, (DL_UART_Main_Config *) &gUART_BIUTEETHConfig);
-    /*
-     * Configure baud rate by setting oversampling and baud rate divisors.
-     *  Target baud rate: 9600
-     *  Actual baud rate: 9600.1
-     */
-    DL_UART_Main_setOversampling(UART_BIUTEETH_INST, DL_UART_OVERSAMPLING_RATE_16X);
-    DL_UART_Main_setBaudRateDivisor(UART_BIUTEETH_INST, UART_BIUTEETH_IBRD_80_MHZ_9600_BAUD, UART_BIUTEETH_FBRD_80_MHZ_9600_BAUD);
-
-
-
-    DL_UART_Main_enable(UART_BIUTEETH_INST);
 }
 
 /* ADC12_0 Initialization */

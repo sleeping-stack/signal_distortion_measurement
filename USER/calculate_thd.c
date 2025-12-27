@@ -3,6 +3,7 @@
 Peak_info peaks[MAX_HARMONIC_PEAKS] = {0};
 uint16_t peak_num = 0;
 float fundamental_freq; // 基波频率
+float fundamental_ampl; // 基波幅值
 float thd = 0;
 float normalized_ampl[MAX_HARMONIC_PEAKS] = {
     1}; // 归一化幅值数组，将第一个元素置1，剩下元素置0
@@ -23,7 +24,7 @@ float normalized_ampl[MAX_HARMONIC_PEAKS] = {
  * @param void 无参数
  * @return void 无返回值
  */
-static void find_peak_info(void) {
+void find_peak_info(void) {
   // 创建临时数组用于分析频谱
   Peak_info temp_peaks[FFT_LENGTH / 2];
   uint16_t temp_peaks_count = 0;
@@ -65,7 +66,8 @@ static void find_peak_info(void) {
   // 输出结果 - 只保留显著的峰值，排除幅值过小的峰值
   // 首先确定基波（幅值最大的峰值）
   if (temp_peaks_count > 0) {
-    float fundamental_ampl = temp_peaks[0].amplitude_mv;
+    fundamental_ampl = temp_peaks[0].amplitude_mv;
+    fundamental_freq = temp_peaks[0].freq;
     uint16_t valid_peak_count = 0;
 
     // 过滤掉幅值小于基波一定比例的峰值
@@ -81,8 +83,6 @@ static void find_peak_info(void) {
   } else {
     peak_num = 0;
   }
-
-  __BKPT(0);
 }
 
 /**
@@ -100,21 +100,15 @@ static void find_peak_info(void) {
  * - normalized_ampl[]: 存储各次谐波归一化幅值的数组
  */
 void calculate_thd(void) {
-  find_peak_info();
-
   if (peak_num == 0)
     return;
-
-  // peaks数组第一个元素为基波
-  float fundamental_ampl = peaks[0].amplitude_mv;
-  fundamental_freq = peaks[0].freq;
 
   // 计算归一化幅值
   float normalized_ampl_sum = 0;
   for (uint16_t i = 1; i < peak_num; i++) {
     float ratio = peaks[i].freq / fundamental_freq;
     // 只考虑2~5次谐波（可调整）
-    int harmonic_order = (int)(ratio + 0.5f); // 四舍五入
+    int harmonic_order = roundf(ratio); // 四舍五入
     if (harmonic_order >= 2 && harmonic_order <= 5) {
       normalized_ampl[harmonic_order - 1] =
           peaks[i].amplitude_mv / fundamental_ampl; // 计算归一化幅值
@@ -147,4 +141,18 @@ static float get_pianyik(uint16_t time) {
         (fft_outputbuf[time] + fft_outputbuf[time - 1]);
   }
   return k;
+}
+
+/**
+ * @brief 清空峰值数据
+ *
+ * 该函数用于清空存储的峰值数据，包括峰值数组、归一化幅度数组和峰值数量
+ *
+ * @return 无返回值
+ */
+void clear_peaks_data(void) {
+  memset(peaks, 0, sizeof(peaks));
+  memset(normalized_ampl, 0, sizeof(normalized_ampl));
+  normalized_ampl[0] = 1;
+  peak_num = 0;
 }

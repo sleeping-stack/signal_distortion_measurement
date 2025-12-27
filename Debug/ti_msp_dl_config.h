@@ -86,6 +86,21 @@ extern "C" {
 
 
 
+/* Defines for UART_BIUTEETH */
+#define UART_BIUTEETH_INST                                                 UART1
+#define UART_BIUTEETH_INST_IRQHandler                           UART1_IRQHandler
+#define UART_BIUTEETH_INST_INT_IRQN                               UART1_INT_IRQn
+#define GPIO_UART_BIUTEETH_RX_PORT                                         GPIOB
+#define GPIO_UART_BIUTEETH_TX_PORT                                         GPIOB
+#define GPIO_UART_BIUTEETH_RX_PIN                                  DL_GPIO_PIN_7
+#define GPIO_UART_BIUTEETH_TX_PIN                                  DL_GPIO_PIN_6
+#define GPIO_UART_BIUTEETH_IOMUX_RX                              (IOMUX_PINCM24)
+#define GPIO_UART_BIUTEETH_IOMUX_TX                              (IOMUX_PINCM23)
+#define GPIO_UART_BIUTEETH_IOMUX_RX_FUNC               IOMUX_PINCM24_PF_UART1_RX
+#define GPIO_UART_BIUTEETH_IOMUX_TX_FUNC               IOMUX_PINCM23_PF_UART1_TX
+#define UART_BIUTEETH_BAUD_RATE                                           (9600)
+#define UART_BIUTEETH_IBRD_40_MHZ_9600_BAUD                                (260)
+#define UART_BIUTEETH_FBRD_40_MHZ_9600_BAUD                                 (27)
 /* Defines for UART_0 */
 #define UART_0_INST                                                        UART0
 #define UART_0_INST_IRQHandler                                  UART0_IRQHandler
@@ -101,21 +116,6 @@ extern "C" {
 #define UART_0_BAUD_RATE                                                (115200)
 #define UART_0_IBRD_40_MHZ_115200_BAUD                                      (21)
 #define UART_0_FBRD_40_MHZ_115200_BAUD                                      (45)
-/* Defines for UART_BIUTEETH */
-#define UART_BIUTEETH_INST                                                 UART3
-#define UART_BIUTEETH_INST_IRQHandler                           UART3_IRQHandler
-#define UART_BIUTEETH_INST_INT_IRQN                               UART3_INT_IRQn
-#define GPIO_UART_BIUTEETH_RX_PORT                                         GPIOA
-#define GPIO_UART_BIUTEETH_TX_PORT                                         GPIOA
-#define GPIO_UART_BIUTEETH_RX_PIN                                 DL_GPIO_PIN_13
-#define GPIO_UART_BIUTEETH_TX_PIN                                 DL_GPIO_PIN_14
-#define GPIO_UART_BIUTEETH_IOMUX_RX                              (IOMUX_PINCM35)
-#define GPIO_UART_BIUTEETH_IOMUX_TX                              (IOMUX_PINCM36)
-#define GPIO_UART_BIUTEETH_IOMUX_RX_FUNC               IOMUX_PINCM35_PF_UART3_RX
-#define GPIO_UART_BIUTEETH_IOMUX_TX_FUNC               IOMUX_PINCM36_PF_UART3_TX
-#define UART_BIUTEETH_BAUD_RATE                                           (9600)
-#define UART_BIUTEETH_IBRD_80_MHZ_9600_BAUD                                (520)
-#define UART_BIUTEETH_FBRD_80_MHZ_9600_BAUD                                 (53)
 
 
 
@@ -146,8 +146,8 @@ void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
 void SYSCFG_DL_TIMER_0_init(void);
-void SYSCFG_DL_UART_0_init(void);
 void SYSCFG_DL_UART_BIUTEETH_init(void);
+void SYSCFG_DL_UART_0_init(void);
 void SYSCFG_DL_ADC12_0_init(void);
 void SYSCFG_DL_DMA_init(void);
 

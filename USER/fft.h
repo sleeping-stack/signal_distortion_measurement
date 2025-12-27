@@ -5,7 +5,7 @@
 #include "arm_math.h"
 #include "uart.h"
 
-#define FFT_LENGTH ADC_SAMPLE_SIZE
+#define FFT_LENGTH 1024
 extern float32_t fft_outputbuf[FFT_LENGTH];
 extern float32_t fft_inputbuf[2 * FFT_LENGTH];
 

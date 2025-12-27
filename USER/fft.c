@@ -50,12 +50,6 @@ void fft_calculate(void) {
   for (uint16_t i = FFT_LENGTH / 2; i < FFT_LENGTH; i++) {
     fft_outputbuf[i] = 0.0f;
   }
-
-  for (uint16_t i = 0; i < FFT_LENGTH; i++) {
-    printf("Magnitude:%f\r\n", fft_outputbuf[i]);
-  }
-
-  __BKPT(0);
 }
 
 /**
