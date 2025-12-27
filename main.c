@@ -32,10 +32,9 @@
 
 #include "adc.h"
 #include "calculate_thd.h"
-#include "delay.h"
 #include "fft.h"
-#include "ti_msp_dl_config.h"
 #include "uart.h"
+#include "global.h"
 
 void clear_sampling_data(void);
 int main(void) {
