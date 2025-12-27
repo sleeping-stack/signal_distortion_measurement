@@ -1,9 +1,0 @@
-# Ignore IDE and build configuration folders
-.settings/
-.theia/
-Debug/
-targetConfigs/
-.ccsproject
-.clangd
-.cproject
-.project
