@@ -32,11 +32,13 @@
 
 #include "adc.h"
 #include "calculate_thd.h"
+#include "data_packet.h"
 #include "fft.h"
-#include "uart.h"
 #include "global.h"
 
 void clear_sampling_data(void);
+void bluteeth_transmit_data(float thd);
+
 int main(void) {
   SYSCFG_DL_init();
   adc_init();
@@ -49,15 +51,10 @@ int main(void) {
   while (false == gCheckADC) {
     __WFE();
   }
-  for (uint16_t i = 0; i < ADC_SAMPLE_SIZE; i++) {
-    printf("V:%d\r\n", gADCSamples[i]);
-  }
   gCheckADC = false;
 
   fft_calculate();
   find_peak_info();
-
-  __BKPT(0);
 
   // 根据第一次采样得到的基波频率调整采样频率
   sample_freq = calculate_optimal_sampling_rate(fundamental_freq);
@@ -67,15 +64,12 @@ int main(void) {
   while (false == gCheckADC) {
     __WFE();
   }
-  for (uint16_t i = 0; i < ADC_SAMPLE_SIZE; i++) {
-    printf("V:%d\r\n", gADCSamples[i]);
-  }
+
   // 计算thd
   fft_calculate();
   find_peak_info();
-  calculate_thd();
-
-  __BKPT(0);
+  float thd = calculate_thd();
+  bluteeth_transmit_data(thd);
 
   while (1) {
   }
@@ -100,4 +94,23 @@ void clear_sampling_data(void) {
 
   // 清零峰值信息相关变量
   clear_peaks_data();
+}
+
+void bluteeth_transmit_data(float thd) {
+  
+  uint8_t buffer[29] = {0};
+  int16_t short_data = 0;
+  float float_data[6] = {0};
+  float_data[0] = thd;
+  for (uint16_t i = 1; i < 6; i++) {
+    float_data[i] = normalized_ampl[i - 1];
+  }
+
+  for (uint16_t i = 0; i < ADC_SAMPLE_SIZE; i++) {
+    short_data = (int16_t)gADCSamples[i];
+    pack_short_and_6floats(short_data, float_data, buffer);
+    for (uint16_t i = 0; i < 29; i++) {
+      DL_UART_Main_transmitDataBlocking(UART_BIUTEETH_INST, buffer[i]);
+    }
+  }
 }

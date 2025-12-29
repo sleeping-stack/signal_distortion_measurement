@@ -36,7 +36,7 @@ void find_peak_info(void) {
     if (amplitude_mv >= 10.0f && amplitude_mv > fft_outputbuf[i - 1] &&
         amplitude_mv > fft_outputbuf[i + 1]) {
       // 使用双峰谱线插值法进行更精确的频率和幅值校正
-      float k = get_pianyik(i); // 获取校正系数k
+      float k = get_peak_offset_correction_factor(i); // 获取校正系数k
 
       // 根据校正系数计算精确频率位置
       float precise_bin = (float)i + k; // k是偏移量
@@ -99,9 +99,9 @@ void find_peak_info(void) {
  * - thd: 用于存储计算得到的THD值的全局变量
  * - normalized_ampl[]: 存储各次谐波归一化幅值的数组
  */
-void calculate_thd(void) {
+float calculate_thd(void) {
   if (peak_num == 0)
-    return;
+    return -1;
 
   // 计算归一化幅值
   float normalized_ampl_sum = 0;
@@ -119,19 +119,21 @@ void calculate_thd(void) {
 
   // 计算thd
   thd = sqrtf(normalized_ampl_sum);
+
+  return thd;
 }
 
 /**
  * @brief 计算频谱峰值的偏移校正系数
  *
- * 该函数用于计算频谱分析中峰值位置的偏移校正系数k，
+ * 该函数用于计算频谱分析中峰值位置的偏移校正系数k（基于汉宁窗的双峰谱线插值法），
  * 通过比较峰值点与其相邻点的幅值关系，使用不同的公式计算校正系数，
  * 以提高频率和幅值的测量精度。
  *
  * @param time FFT输出数据中的索引位置，表示待校正的峰值位置
  * @return float 返回计算得到的偏移校正系数k，用于后续的频率和幅值校正
  */
-static float get_pianyik(uint16_t time) {
+static float get_peak_offset_correction_factor(uint16_t time) {
   float k;
   if (fft_outputbuf[time + 1] >= fft_outputbuf[time - 1]) {
     k = (fft_outputbuf[time + 1] * 2 - fft_outputbuf[time]) /

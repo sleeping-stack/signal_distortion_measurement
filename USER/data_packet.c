@@ -1,5 +1,4 @@
 #include "data_packet.h"
-#include <string.h>
 
 // 打包 float 类型（4 字节）
 int pack_float(float value, uint8_t *packet) {

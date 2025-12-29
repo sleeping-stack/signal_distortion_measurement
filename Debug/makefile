@@ -17,7 +17,6 @@ ORDERED_OBJS += \
 "./USER/calculate_thd.o" \
 "./USER/data_packet.o" \
 "./USER/fft.o" \
-"./USER/uart.o" \
 $(GEN_CMDS__FLAG) \
 -Wl,-ldevice.cmd.genlibs \
 -Wl,-llibc.a \
@@ -150,8 +149,8 @@ signal_distortion_measurement.out: $(OBJS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(GEN_MISC_FILES__QUOTED)$(GEN_FILES__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "main.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "USER\adc.o" "USER\calculate_thd.o" "USER\data_packet.o" "USER\fft.o" "USER\uart.o" 
-	-$(RM) "main.d" "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" "USER\adc.d" "USER\calculate_thd.d" "USER\data_packet.d" "USER\fft.d" "USER\uart.d" 
+	-$(RM) "main.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "USER\adc.o" "USER\calculate_thd.o" "USER\data_packet.o" "USER\fft.o" 
+	-$(RM) "main.d" "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" "USER\adc.d" "USER\calculate_thd.d" "USER\data_packet.d" "USER\fft.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

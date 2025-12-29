@@ -5,7 +5,6 @@
 "./USER/calculate_thd.o"
 "./USER/data_packet.o"
 "./USER/fft.o"
-"./USER/uart.o"
 -l"./device_linker.cmd"
 -ldevice.cmd.genlibs
 -llibc.a
