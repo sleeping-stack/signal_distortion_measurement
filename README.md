@@ -19,8 +19,6 @@
 │  ├─ fft.c / fft.h                      # FFT + 窗函数 + 频谱输出（CMSIS-DSP）
 │  ├─ calculate_thd.c / calculate_thd.h  # 峰值检测、谐波提取、THD 计算
 │  ├─ data_packet.c / data_packet.h      # 数据打包（short/float）用于蓝牙模块发送数据
-│  ├─ uart.c / uart.h                    # printf 串口重定向
-│  └─ delay.h                            # 延时函数
 ├─ targetConfigs/                        
 ├─ Debug/                                # 构建产物（由 CCS 自动生成）
 │  ├─ ti_msp_dl_config.c/.h              # SysConfig 生成的 DriverLib 初始化代码
