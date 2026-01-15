@@ -6,4 +6,4 @@
 void fft_calculate(void);
 static void Hanningwindow(float32_t hanning_window[]);
 
-#endif // FFT_H
+#endif  // FFT_H

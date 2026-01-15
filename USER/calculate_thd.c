@@ -1,12 +1,11 @@
 #include "calculate_thd.h"
 
 Peak_info peaks[MAX_HARMONIC_PEAKS] = {0};
-uint16_t peak_num = 0;
-float fundamental_freq; // 基波频率
-float fundamental_ampl; // 基波幅值
-float thd = 0;
-float normalized_ampl[MAX_HARMONIC_PEAKS] = {
-    1}; // 归一化幅值数组，将第一个元素置1，剩下元素置0
+uint16_t peak_num                   = 0;
+float fundamental_freq;  // 基波频率
+float fundamental_ampl;  // 基波幅值
+float thd                                 = 0;
+float normalized_ampl[MAX_HARMONIC_PEAKS] = {1};  // 归一化幅值数组，将第一个元素置1，剩下元素置0
 
 /**
  * @brief 检测并提取信号频谱中的峰值信息
@@ -24,65 +23,64 @@ float normalized_ampl[MAX_HARMONIC_PEAKS] = {
  * @param void 无参数
  * @return void 无返回值
  */
-void find_peak_info(void) {
-  // 创建临时数组用于分析频谱
-  Peak_info temp_peaks[FFT_LENGTH / 2];
-  uint16_t temp_peaks_count = 0;
+void find_peak_info(void)
+{
+    // 创建临时数组用于分析频谱
+    Peak_info temp_peaks[FFT_LENGTH / 2];
+    uint16_t temp_peaks_count = 0;
 
-  // 找局部峰值（已经按频率从小到大排好）
-  for (uint16_t i = 1; i < FFT_LENGTH / 2; i++) {
-    float amplitude_mv = fft_outputbuf[i];
-    // 忽略幅值过小点，判断是否为极值
-    if (amplitude_mv >= 10.0f && amplitude_mv > fft_outputbuf[i - 1] &&
-        amplitude_mv > fft_outputbuf[i + 1]) {
-      // 使用双峰谱线插值法进行更精确的频率和幅值校正
-      float k = get_peak_offset_correction_factor(i); // 获取校正系数k
+    // 找局部峰值（已经按频率从小到大排好）
+    for (uint16_t i = 1; i < FFT_LENGTH / 2; i++) {
+        float amplitude_mv = fft_outputbuf[i];
+        // 忽略幅值过小点，判断是否为极值
+        if (amplitude_mv >= 10.0f && amplitude_mv > fft_outputbuf[i - 1] &&
+            amplitude_mv > fft_outputbuf[i + 1]) {
+            // 使用双峰谱线插值法进行更精确的频率和幅值校正
+            float k = get_peak_offset_correction_factor(i);  // 获取校正系数k
 
-      // 根据校正系数计算精确频率位置
-      float precise_bin = (float)i + k; // k是偏移量
+            // 根据校正系数计算精确频率位置
+            float precise_bin = (float)i + k;  // k是偏移量
 
-      // 计算校正后的幅值
-      float corrected_amplitude =
-          (PI * k * amplitude_mv * 2 * (1 - k * k) / arm_sin_f32(PI * k));
+            // 计算校正后的幅值
+            float corrected_amplitude =
+                (PI * k * amplitude_mv * 2 * (1 - k * k) / arm_sin_f32(PI * k));
 
-      temp_peaks[temp_peaks_count].freq =
-          precise_bin * sample_freq / FFT_LENGTH;
-      temp_peaks[temp_peaks_count].amplitude_mv = corrected_amplitude;
-      temp_peaks_count++;
+            temp_peaks[temp_peaks_count].freq         = precise_bin * sample_freq / FFT_LENGTH;
+            temp_peaks[temp_peaks_count].amplitude_mv = corrected_amplitude;
+            temp_peaks_count++;
+        }
     }
-  }
 
-  // 对检测到的峰值进行排序，按幅值从大到小排列，以便后续处理
-  for (int i = 0; i < temp_peaks_count - 1; i++) {
-    for (int j = 0; j < temp_peaks_count - 1 - i; j++) {
-      if (temp_peaks[j].amplitude_mv < temp_peaks[j + 1].amplitude_mv) {
-        Peak_info temp = temp_peaks[j];
-        temp_peaks[j] = temp_peaks[j + 1];
-        temp_peaks[j + 1] = temp;
-      }
+    // 对检测到的峰值进行排序，按幅值从大到小排列，以便后续处理
+    for (int i = 0; i < temp_peaks_count - 1; i++) {
+        for (int j = 0; j < temp_peaks_count - 1 - i; j++) {
+            if (temp_peaks[j].amplitude_mv < temp_peaks[j + 1].amplitude_mv) {
+                Peak_info temp    = temp_peaks[j];
+                temp_peaks[j]     = temp_peaks[j + 1];
+                temp_peaks[j + 1] = temp;
+            }
+        }
     }
-  }
 
-  // 输出结果 - 只保留显著的峰值，排除幅值过小的峰值
-  // 首先确定基波（幅值最大的峰值）
-  if (temp_peaks_count > 0) {
-    fundamental_ampl = temp_peaks[0].amplitude_mv;
-    fundamental_freq = temp_peaks[0].freq;
-    uint16_t valid_peak_count = 0;
+    // 输出结果 - 只保留显著的峰值，排除幅值过小的峰值
+    // 首先确定基波（幅值最大的峰值）
+    if (temp_peaks_count > 0) {
+        fundamental_ampl          = temp_peaks[0].amplitude_mv;
+        fundamental_freq          = temp_peaks[0].freq;
+        uint16_t valid_peak_count = 0;
 
-    // 过滤掉幅值小于基波一定比例的峰值
-    for (uint16_t i = 0;
-         i < temp_peaks_count && valid_peak_count < MAX_HARMONIC_PEAKS; i++) {
-      // 只保留幅值大于基波幅值5%的峰值（可根据需要调整比例）
-      if (temp_peaks[i].amplitude_mv >= fundamental_ampl * 0.05f) {
-        peaks[valid_peak_count] = temp_peaks[i];
-        valid_peak_count++;
-      }
+        // 过滤掉幅值小于基波一定比例的峰值
+        for (uint16_t i = 0; i < temp_peaks_count && valid_peak_count < MAX_HARMONIC_PEAKS; i++) {
+            // 只保留幅值大于基波幅值5%的峰值（可根据需要调整比例）
+            if (temp_peaks[i].amplitude_mv >= fundamental_ampl * 0.05f) {
+                peaks[valid_peak_count] = temp_peaks[i];
+                valid_peak_count++;
+            }
+        }
+        peak_num = valid_peak_count;
+    } else {
+        peak_num = 0;
     }
-    peak_num = valid_peak_count;
-  } else {
-    peak_num = 0;
-  }
 }
 
 /**
@@ -99,28 +97,28 @@ void find_peak_info(void) {
  * - thd: 用于存储计算得到的THD值的全局变量
  * - normalized_ampl[]: 存储各次谐波归一化幅值的数组
  */
-float calculate_thd(void) {
-  if (peak_num == 0)
-    return -1;
+float calculate_thd(void)
+{
+    if (peak_num == 0) return -1;
 
-  // 计算归一化幅值
-  float normalized_ampl_sum = 0;
-  for (uint16_t i = 1; i < peak_num; i++) {
-    float ratio = peaks[i].freq / fundamental_freq;
-    // 只考虑2~5次谐波（可调整）
-    int harmonic_order = roundf(ratio); // 四舍五入
-    if (harmonic_order >= 2 && harmonic_order <= 5) {
-      normalized_ampl[harmonic_order - 1] =
-          peaks[i].amplitude_mv / fundamental_ampl; // 计算归一化幅值
-      normalized_ampl_sum += normalized_ampl[harmonic_order - 1] *
-                             normalized_ampl[harmonic_order - 1];
+    // 计算归一化幅值
+    float normalized_ampl_sum = 0;
+    for (uint16_t i = 1; i < peak_num; i++) {
+        float ratio = peaks[i].freq / fundamental_freq;
+        // 只考虑2~5次谐波（可调整）
+        int harmonic_order = roundf(ratio);  // 四舍五入
+        if (harmonic_order >= 2 && harmonic_order <= 5) {
+            normalized_ampl[harmonic_order - 1] =
+                peaks[i].amplitude_mv / fundamental_ampl;  // 计算归一化幅值
+            normalized_ampl_sum +=
+                normalized_ampl[harmonic_order - 1] * normalized_ampl[harmonic_order - 1];
+        }
     }
-  }
 
-  // 计算thd
-  thd = sqrtf(normalized_ampl_sum);
+    // 计算thd
+    thd = sqrtf(normalized_ampl_sum);
 
-  return thd;
+    return thd;
 }
 
 /**
@@ -133,16 +131,17 @@ float calculate_thd(void) {
  * @param time FFT输出数据中的索引位置，表示待校正的峰值位置
  * @return float 返回计算得到的偏移校正系数k，用于后续的频率和幅值校正
  */
-static float get_peak_offset_correction_factor(uint16_t time) {
-  float k;
-  if (fft_outputbuf[time + 1] >= fft_outputbuf[time - 1]) {
-    k = (fft_outputbuf[time + 1] * 2 - fft_outputbuf[time]) /
-        (fft_outputbuf[time + 1] + fft_outputbuf[time]);
-  } else {
-    k = (fft_outputbuf[time] - fft_outputbuf[time - 1] * 2) /
-        (fft_outputbuf[time] + fft_outputbuf[time - 1]);
-  }
-  return k;
+static float get_peak_offset_correction_factor(uint16_t time)
+{
+    float k;
+    if (fft_outputbuf[time + 1] >= fft_outputbuf[time - 1]) {
+        k = (fft_outputbuf[time + 1] * 2 - fft_outputbuf[time]) /
+            (fft_outputbuf[time + 1] + fft_outputbuf[time]);
+    } else {
+        k = (fft_outputbuf[time] - fft_outputbuf[time - 1] * 2) /
+            (fft_outputbuf[time] + fft_outputbuf[time - 1]);
+    }
+    return k;
 }
 
 /**
@@ -152,9 +151,10 @@ static float get_peak_offset_correction_factor(uint16_t time) {
  *
  * @return 无返回值
  */
-void clear_peaks_data(void) {
-  memset(peaks, 0, sizeof(peaks));
-  memset(normalized_ampl, 0, sizeof(normalized_ampl));
-  normalized_ampl[0] = 1;
-  peak_num = 0;
+void clear_peaks_data(void)
+{
+    memset(peaks, 0, sizeof(peaks));
+    memset(normalized_ampl, 0, sizeof(normalized_ampl));
+    normalized_ampl[0] = 1;
+    peak_num           = 0;
 }

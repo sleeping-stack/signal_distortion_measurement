@@ -8,37 +8,49 @@ SHELL = cmd.exe
 C_SRCS += \
 ../USER/adc.c \
 ../USER/calculate_thd.c \
+../USER/clock.c \
 ../USER/data_packet.c \
-../USER/fft.c 
+../USER/fft.c \
+../USER/uart_screen_display.c 
 
 C_DEPS += \
 ./USER/adc.d \
 ./USER/calculate_thd.d \
+./USER/clock.d \
 ./USER/data_packet.d \
-./USER/fft.d 
+./USER/fft.d \
+./USER/uart_screen_display.d 
 
 OBJS += \
 ./USER/adc.o \
 ./USER/calculate_thd.o \
+./USER/clock.o \
 ./USER/data_packet.o \
-./USER/fft.o 
+./USER/fft.o \
+./USER/uart_screen_display.o 
 
 OBJS__QUOTED += \
 "USER\adc.o" \
 "USER\calculate_thd.o" \
+"USER\clock.o" \
 "USER\data_packet.o" \
-"USER\fft.o" 
+"USER\fft.o" \
+"USER\uart_screen_display.o" 
 
 C_DEPS__QUOTED += \
 "USER\adc.d" \
 "USER\calculate_thd.d" \
+"USER\clock.d" \
 "USER\data_packet.d" \
-"USER\fft.d" 
+"USER\fft.d" \
+"USER\uart_screen_display.d" 
 
 C_SRCS__QUOTED += \
 "../USER/adc.c" \
 "../USER/calculate_thd.c" \
+"../USER/clock.c" \
 "../USER/data_packet.c" \
-"../USER/fft.c" 
+"../USER/fft.c" \
+"../USER/uart_screen_display.c" 
 
 

@@ -19,7 +19,6 @@ int pack_short(short value, uint8_t *packet);
 // packet: 输出缓冲区，至少需要 8 字节空间
 // 返回值: 成功返回 8（数据包总长度），失败返回 0
 int pack_short_and_float(short short_value, float float_value, uint8_t *packet);
-int pack_short_and_6floats(short short_value, const float *float_values,
-                           uint8_t *packet);
+int pack_short_and_6floats(short short_value, const float *float_values, uint8_t *packet);
 
-#endif // DATA_PACK_H
+#endif  // DATA_PACK_H

@@ -11,10 +11,12 @@
 const ADC12         = scripting.addModule("/ti/driverlib/ADC12", {}, false);
 const ADC121        = ADC12.addInstance();
 const SYSCTL        = scripting.addModule("/ti/driverlib/SYSCTL");
+const SYSTICK       = scripting.addModule("/ti/driverlib/SYSTICK");
 const TIMER         = scripting.addModule("/ti/driverlib/TIMER", {}, false);
 const TIMER1        = TIMER.addInstance();
 const UART          = scripting.addModule("/ti/driverlib/UART", {}, false);
 const UART1         = UART.addInstance();
+const UART2         = UART.addInstance();
 const ProjectConfig = scripting.addModule("/ti/project_config/ProjectConfig");
 
 /**
@@ -62,6 +64,12 @@ const Board = scripting.addModule("/ti/driverlib/Board", {}, false);
 SYSCTL.forceDefaultClkConfig = true;
 SYSCTL.clockTreeEn           = true;
 
+SYSTICK.periodEnable      = true;
+SYSTICK.period            = 80000;
+SYSTICK.interruptEnable   = true;
+SYSTICK.systickEnable     = true;
+SYSTICK.interruptPriority = "0";
+
 TIMER1.$name                       = "TIMER_0";
 TIMER1.timerPeriod                 = "1 us";
 TIMER1.timerMode                   = "PERIODIC";
@@ -82,6 +90,22 @@ UART1.rxPinConfig.hideOutputInversion  = scripting.forceWrite(false);
 UART1.rxPinConfig.onlyInternalResistor = scripting.forceWrite(false);
 UART1.rxPinConfig.passedPeripheralType = scripting.forceWrite("Digital");
 UART1.rxPinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric4";
+
+UART2.$name                            = "UART_SCREEN_DISPLAY";
+UART2.targetBaudRate                   = 115200;
+UART2.enabledInterrupts                = ["RX"];
+UART2.peripheral.$assign               = "UART0";
+UART2.peripheral.rxPin.$assign         = "PA11";
+UART2.peripheral.txPin.$assign         = "PA10";
+UART2.txPinConfig.direction            = scripting.forceWrite("OUTPUT");
+UART2.txPinConfig.hideOutputInversion  = scripting.forceWrite(false);
+UART2.txPinConfig.onlyInternalResistor = scripting.forceWrite(false);
+UART2.txPinConfig.passedPeripheralType = scripting.forceWrite("Digital");
+UART2.txPinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric0";
+UART2.rxPinConfig.hideOutputInversion  = scripting.forceWrite(false);
+UART2.rxPinConfig.onlyInternalResistor = scripting.forceWrite(false);
+UART2.rxPinConfig.passedPeripheralType = scripting.forceWrite("Digital");
+UART2.rxPinConfig.$name                = "ti_driverlib_gpio_GPIOPinGeneric1";
 
 ProjectConfig.genLibCMSIS = true;
 

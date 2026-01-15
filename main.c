@@ -1,78 +1,29 @@
-/*
- * Copyright (c) 2021, Texas Instruments Incorporated
- * All rights reserved.
- *
- * Redistribution and use in source and binary forms, with or without
- * modification, are permitted provided that the following conditions
- * are met:
- *
- * *  Redistributions of source code must retain the above copyright
- *    notice, this list of conditions and the following disclaimer.
- *
- * *  Redistributions in binary form must reproduce the above copyright
- *    notice, this list of conditions and the following disclaimer in the
- *    documentation and/or other materials provided with the distribution.
- *
- * *  Neither the name of Texas Instruments Incorporated nor the names of
- *    its contributors may be used to endorse or promote products derived
- *    from this software without specific prior written permission.
- *
- * THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS"
- * AND ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO,
- * THE IMPLIED WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR
- * PURPOSE ARE DISCLAIMED. IN NO EVENT SHALL THE COPYRIGHT OWNER OR
- * CONTRIBUTORS BE LIABLE FOR ANY DIRECT, INDIRECT, INCIDENTAL, SPECIAL,
- * EXEMPLARY, OR CONSEQUENTIAL DAMAGES (INCLUDING, BUT NOT LIMITED TO,
- * PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES; LOSS OF USE, DATA, OR PROFITS;
- * OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND ON ANY THEORY OF LIABILITY,
- * WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR
- * OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE,
- * EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
- */
-
 #include "adc.h"
 #include "calculate_thd.h"
 #include "data_packet.h"
 #include "fft.h"
 #include "global.h"
+#include "uart_screen_display.h"
+#include "clock.h"
 
 void clear_sampling_data(void);
 void bluteeth_transmit_data(float thd);
+void process_once(void);
 
-int main(void) {
-  SYSCFG_DL_init();
-  adc_init();
+volatile bool if_process = false;
 
-  // 进行第一次ADC采样，确认基波频率用于调整采样率，默认采样频率为262144（1024 *
-  // 256）Hz，确保能正确采集到基波频率（1kHz到100kHz）
-  sample_freq = 262144;
-  set_sample_freq(sample_freq, TIMER_0_INST);
-  DL_Timer_startCounter(TIMER_0_INST);
-  while (false == gCheckADC) {
-    __WFE();
-  }
-  gCheckADC = false;
+int main(void)
+{
+    SYSCFG_DL_init();
+    adc_init();
+    uart_init();
 
-  fft_calculate();
-  find_peak_info();
-
-  // 根据第一次采样得到的基波频率调整采样频率
-  sample_freq = calculate_optimal_sampling_rate(fundamental_freq);
-  set_sample_freq(sample_freq, TIMER_0_INST);
-  clear_sampling_data();
-  DL_Timer_startCounter(TIMER_0_INST);
-  while (false == gCheckADC) {
-    __WFE();
-  }
-
-  // 计算thd
-  fft_calculate();
-  find_peak_info();
-  float thd = calculate_thd();
-  bluteeth_transmit_data(thd);
-
-  while (1) {
-  }
+    while (1) {
+        if (process_flag) {
+            process_once();
+            process_flag = false;
+        }
+    }
 }
 
 /**
@@ -84,33 +35,68 @@ int main(void) {
  * @param void 无参数
  * @return void 无返回值
  */
-void clear_sampling_data(void) {
-  // 清零ADC采样数组
-  memset(gADCSamples, 0, sizeof(gADCSamples));
+void clear_sampling_data(void)
+{
+    // 清零ADC采样数组
+    memset(gADCSamples, 0, sizeof(gADCSamples));
 
-  // 清零FFT相关数组
-  memset(fft_inputbuf, 0, sizeof(fft_inputbuf));
-  memset(fft_outputbuf, 0, sizeof(fft_outputbuf));
+    // 清零FFT相关数组
+    memset(fft_inputbuf, 0, sizeof(fft_inputbuf));
+    memset(fft_outputbuf, 0, sizeof(fft_outputbuf));
 
-  // 清零峰值信息相关变量
-  clear_peaks_data();
+    // 清零峰值信息相关变量
+    clear_peaks_data();
 }
 
-void bluteeth_transmit_data(float thd) {
-  
-  uint8_t buffer[29] = {0};
-  int16_t short_data = 0;
-  float float_data[6] = {0};
-  float_data[0] = thd;
-  for (uint16_t i = 1; i < 6; i++) {
-    float_data[i] = normalized_ampl[i - 1];
-  }
-
-  for (uint16_t i = 0; i < ADC_SAMPLE_SIZE; i++) {
-    short_data = (int16_t)gADCSamples[i];
-    pack_short_and_6floats(short_data, float_data, buffer);
-    for (uint16_t i = 0; i < 29; i++) {
-      DL_UART_Main_transmitDataBlocking(UART_BIUTEETH_INST, buffer[i]);
+void bluteeth_transmit_data(float thd)
+{
+    uint8_t buffer[29]  = {0};
+    int16_t short_data  = 0;
+    float float_data[6] = {0};
+    float_data[0]       = thd;
+    for (uint16_t i = 1; i < 6; i++) {
+        float_data[i] = normalized_ampl[i - 1];
     }
-  }
+
+    for (uint16_t i = 0; i < ADC_SAMPLE_SIZE; i++) {
+        short_data = (int16_t)gADCSamples[i];
+        pack_short_and_6floats(short_data, float_data, buffer);
+        for (uint16_t i = 0; i < 29; i++) {
+            DL_UART_Main_transmitDataBlocking(UART_BIUTEETH_INST, buffer[i]);
+        }
+    }
+}
+
+void process_once(void)
+{
+    uint32_t start_time = my_clock();
+    clear_sampling_data();
+    // 进行第一次ADC采样，确认基波频率用于调整采样率，默认采样频率为262144（1024 *
+    // 256）Hz，确保能正确采集到基波频率（1kHz到100kHz）
+    sample_freq = 262144;
+    set_sample_freq(sample_freq, TIMER_0_INST);
+    DL_Timer_startCounter(TIMER_0_INST);
+    while (false == gCheckADC) {
+        __WFE();
+    }
+    gCheckADC = false;
+
+    fft_calculate();
+    find_peak_info();
+
+    // 根据第一次采样得到的基波频率调整采样频率
+    sample_freq = calculate_optimal_sampling_rate(fundamental_freq);
+    set_sample_freq(sample_freq, TIMER_0_INST);
+    clear_sampling_data();
+    DL_Timer_startCounter(TIMER_0_INST);
+    while (false == gCheckADC) {
+        __WFE();
+    }
+
+    // 计算thd
+    fft_calculate();
+    find_peak_info();
+    float thd = calculate_thd();
+    // bluteeth_transmit_data(thd);
+    uart_send_display_data(thd,start_time);
 }
