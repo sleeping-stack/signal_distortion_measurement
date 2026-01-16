@@ -99,11 +99,7 @@ int pack_short_and_6floats(short short_value, const float *float_values, uint8_t
     return 1 + sizeof(short) + 6 * sizeof(float) + 1 + 1;
 }
 
-void uart_bluteeth_init(void)
-{
-    NVIC_ClearPendingIRQ(UART_BLUTEETH_INST_INT_IRQN);
-    NVIC_EnableIRQ(UART_BLUTEETH_INST_INT_IRQN);
-}
+void uart_bluteeth_init(void) { NVIC_EnableIRQ(UART_BLUTEETH_INST_INT_IRQN); }
 
 void uart_bluteeth_send(uint8_t tx_buff[], uint16_t tx_size)
 {
@@ -129,11 +125,12 @@ void bluteeth_transmit_data(float thd)
         float_data[i] = normalized_ampl[i - 1];
     }
 
-    for (uint16_t i = 0; i < ADC_SAMPLE_SIZE; i++) {
+    for (uint16_t i = 0; i < sample_freq / fundamental_freq * 3 && i < ADC_SAMPLE_SIZE; i++) {
         short_data = (int16_t)gADCSamples[i];
         pack_short_and_6floats(short_data, float_data, buffer);
         uint16_t tx_size = sizeof(buffer);
         uart_bluteeth_send(buffer, tx_size);
+        delay_cycles(CPUCLK_FREQ / 1000 * 50);
     }
 }
 

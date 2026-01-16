@@ -78,6 +78,6 @@ void process_once(void)
     fft_calculate();
     find_peak_info();
     float thd = calculate_thd();
-    // bluteeth_transmit_data(thd);
+    bluteeth_transmit_data(thd);
     uart_send_display_data(thd, start_time);
 }

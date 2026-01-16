@@ -72,13 +72,13 @@ void uart_send_display_data(float thd, uint32_t start_time)
     snprintf(tx_buffer, sizeof(tx_buffer), "t6.txt=\"%.3f\"\xff\xff\xff", thd);
     uart_send_string(tx_buffer);
 
-    // snprintf(tx_buffer, sizeof(tx_buffer), "addt s0.id,0,%d\xff\xff\xff", 100);
-    // uart_send_string(tx_buffer);
-
-    // for (uint16_t i = 0; i < 100; i++)
-    //     DL_UART_Main_transmitDataBlocking(UART_SCREEN_DISPLAY_INST,
-    //                                       (int)(gADCSamples[i] / 4095.0 * 255.0));
-    // uart_send_string("\x01\xff\xff\xff");
+    memset(tx_buffer, 0, sizeof(tx_buffer));
+    for (int i = 0; i < sample_freq / fundamental_freq * 10 && i < ADC_SAMPLE_SIZE ; i++) {
+        // 向曲线s0的通道0传输1个数据,add指令不支持跨页面
+        snprintf(tx_buffer, sizeof(tx_buffer), "add s0.id,0,%d\xff\xff\xff",
+                 (int)(gADCSamples[i] / 4095.0 * 255.0));
+        uart_send_string(tx_buffer);
+    }
 
     uint32_t end_time  = my_clock();
     float duration_sec = (float)(end_time - start_time) / 1000.0f;
