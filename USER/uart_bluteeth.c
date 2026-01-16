@@ -1,4 +1,6 @@
-#include "data_packet.h"
+#include "uart_bluteeth.h"
+
+volatile uint8_t uart_tx_complete_flag = 1;  // 初始标志为已完成（允许新任务）
 
 // 打包 float 类型（4 字节）
 int pack_float(float value, uint8_t *packet)
@@ -95,4 +97,52 @@ int pack_short_and_6floats(short short_value, const float *float_values, uint8_t
 
     // 返回总长度：1 (包头) + 26 (原数据) + 1 (校验) + 1 (包尾) = 29
     return 1 + sizeof(short) + 6 * sizeof(float) + 1 + 1;
+}
+
+void uart_bluteeth_init(void)
+{
+    NVIC_ClearPendingIRQ(UART_BLUTEETH_INST_INT_IRQN);
+    NVIC_EnableIRQ(UART_BLUTEETH_INST_INT_IRQN);
+}
+
+void uart_bluteeth_send(uint8_t tx_buff[], uint16_t tx_size)
+{
+    // 设置源地址
+    DL_DMA_setSrcAddr(DMA, DMA_CH1_CHAN_ID, (uint32_t)(tx_buff));
+    // 设置目标地址
+    DL_DMA_setDestAddr(DMA, DMA_CH1_CHAN_ID, (uint32_t)(&UART_BLUTEETH_INST->TXDATA));
+    // 设置要搬运的字节数
+    DL_DMA_setTransferSize(DMA, DMA_CH1_CHAN_ID, tx_size);
+    // 使能DMA通道
+    DL_DMA_enableChannel(DMA, DMA_CH1_CHAN_ID);
+
+    uart_tx_complete_flag = 0;
+}
+
+void bluteeth_transmit_data(float thd)
+{
+    uint8_t buffer[30]  = {0};
+    int16_t short_data  = 0;
+    float float_data[6] = {0};
+    float_data[0]       = thd;
+    for (uint16_t i = 1; i < 6; i++) {
+        float_data[i] = normalized_ampl[i - 1];
+    }
+
+    for (uint16_t i = 0; i < ADC_SAMPLE_SIZE; i++) {
+        short_data = (int16_t)gADCSamples[i];
+        pack_short_and_6floats(short_data, float_data, buffer);
+        uint16_t tx_size = sizeof(buffer);
+        uart_bluteeth_send(buffer, tx_size);
+    }
+}
+
+void UART_BLUTEETH_INST_IRQHandler(void)
+{
+    volatile uint32_t flag = DL_UART_Main_getPendingInterrupt(UART_BLUTEETH_INST);
+    switch (flag) {
+        case DL_UART_IIDX_EOT_DONE: {
+            uart_tx_complete_flag = 1;
+        } break;
+    }
 }

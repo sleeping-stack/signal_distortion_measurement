@@ -86,21 +86,21 @@ extern "C" {
 
 
 
-/* Defines for UART_BIUTEETH */
-#define UART_BIUTEETH_INST                                                 UART1
-#define UART_BIUTEETH_INST_IRQHandler                           UART1_IRQHandler
-#define UART_BIUTEETH_INST_INT_IRQN                               UART1_INT_IRQn
-#define GPIO_UART_BIUTEETH_RX_PORT                                         GPIOB
-#define GPIO_UART_BIUTEETH_TX_PORT                                         GPIOB
-#define GPIO_UART_BIUTEETH_RX_PIN                                  DL_GPIO_PIN_7
-#define GPIO_UART_BIUTEETH_TX_PIN                                  DL_GPIO_PIN_6
-#define GPIO_UART_BIUTEETH_IOMUX_RX                              (IOMUX_PINCM24)
-#define GPIO_UART_BIUTEETH_IOMUX_TX                              (IOMUX_PINCM23)
-#define GPIO_UART_BIUTEETH_IOMUX_RX_FUNC               IOMUX_PINCM24_PF_UART1_RX
-#define GPIO_UART_BIUTEETH_IOMUX_TX_FUNC               IOMUX_PINCM23_PF_UART1_TX
-#define UART_BIUTEETH_BAUD_RATE                                           (9600)
-#define UART_BIUTEETH_IBRD_40_MHZ_9600_BAUD                                (260)
-#define UART_BIUTEETH_FBRD_40_MHZ_9600_BAUD                                 (27)
+/* Defines for UART_BLUTEETH */
+#define UART_BLUTEETH_INST                                                 UART1
+#define UART_BLUTEETH_INST_IRQHandler                           UART1_IRQHandler
+#define UART_BLUTEETH_INST_INT_IRQN                               UART1_INT_IRQn
+#define GPIO_UART_BLUTEETH_RX_PORT                                         GPIOB
+#define GPIO_UART_BLUTEETH_TX_PORT                                         GPIOB
+#define GPIO_UART_BLUTEETH_RX_PIN                                  DL_GPIO_PIN_7
+#define GPIO_UART_BLUTEETH_TX_PIN                                  DL_GPIO_PIN_6
+#define GPIO_UART_BLUTEETH_IOMUX_RX                              (IOMUX_PINCM24)
+#define GPIO_UART_BLUTEETH_IOMUX_TX                              (IOMUX_PINCM23)
+#define GPIO_UART_BLUTEETH_IOMUX_RX_FUNC               IOMUX_PINCM24_PF_UART1_RX
+#define GPIO_UART_BLUTEETH_IOMUX_TX_FUNC               IOMUX_PINCM23_PF_UART1_TX
+#define UART_BLUTEETH_BAUD_RATE                                           (9600)
+#define UART_BLUTEETH_IBRD_40_MHZ_9600_BAUD                                (260)
+#define UART_BLUTEETH_FBRD_40_MHZ_9600_BAUD                                 (27)
 /* Defines for UART_SCREEN_DISPLAY */
 #define UART_SCREEN_DISPLAY_INST                                           UART0
 #define UART_SCREEN_DISPLAY_INST_IRQHandler                        UART0_IRQHandler
@@ -135,8 +135,12 @@ extern "C" {
 
 
 /* Defines for DMA_CH0 */
-#define DMA_CH0_CHAN_ID                                                      (0)
+#define DMA_CH0_CHAN_ID                                                      (1)
 #define ADC12_0_INST_DMA_TRIGGER                      (DMA_ADC0_EVT_GEN_BD_TRIG)
+
+/* Defines for DMA_CH1 */
+#define DMA_CH1_CHAN_ID                                                      (0)
+#define UART_BLUTEETH_INST_DMA_TRIGGER                       (DMA_UART1_TX_TRIG)
 
 
 
@@ -148,7 +152,7 @@ void SYSCFG_DL_initPower(void);
 void SYSCFG_DL_GPIO_init(void);
 void SYSCFG_DL_SYSCTL_init(void);
 void SYSCFG_DL_TIMER_0_init(void);
-void SYSCFG_DL_UART_BIUTEETH_init(void);
+void SYSCFG_DL_UART_BLUTEETH_init(void);
 void SYSCFG_DL_UART_SCREEN_DISPLAY_init(void);
 void SYSCFG_DL_ADC12_0_init(void);
 void SYSCFG_DL_DMA_init(void);

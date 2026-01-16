@@ -4,8 +4,8 @@
 "./USER/adc.o"
 "./USER/calculate_thd.o"
 "./USER/clock.o"
-"./USER/data_packet.o"
 "./USER/fft.o"
+"./USER/uart_bluteeth.o"
 "./USER/uart_screen_display.o"
 -l"./device_linker.cmd"
 -ldevice.cmd.genlibs

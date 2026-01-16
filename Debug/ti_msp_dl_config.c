@@ -53,7 +53,7 @@ SYSCONFIG_WEAK void SYSCFG_DL_init(void)
     /* Module-Specific Initializations*/
     SYSCFG_DL_SYSCTL_init();
     SYSCFG_DL_TIMER_0_init();
-    SYSCFG_DL_UART_BIUTEETH_init();
+    SYSCFG_DL_UART_BLUTEETH_init();
     SYSCFG_DL_UART_SCREEN_DISPLAY_init();
     SYSCFG_DL_ADC12_0_init();
     SYSCFG_DL_DMA_init();
@@ -91,7 +91,7 @@ SYSCONFIG_WEAK void SYSCFG_DL_initPower(void)
     DL_GPIO_reset(GPIOA);
     DL_GPIO_reset(GPIOB);
     DL_TimerG_reset(TIMER_0_INST);
-    DL_UART_Main_reset(UART_BIUTEETH_INST);
+    DL_UART_Main_reset(UART_BLUTEETH_INST);
     DL_UART_Main_reset(UART_SCREEN_DISPLAY_INST);
     DL_ADC12_reset(ADC12_0_INST);
 
@@ -100,7 +100,7 @@ SYSCONFIG_WEAK void SYSCFG_DL_initPower(void)
     DL_GPIO_enablePower(GPIOA);
     DL_GPIO_enablePower(GPIOB);
     DL_TimerG_enablePower(TIMER_0_INST);
-    DL_UART_Main_enablePower(UART_BIUTEETH_INST);
+    DL_UART_Main_enablePower(UART_BLUTEETH_INST);
     DL_UART_Main_enablePower(UART_SCREEN_DISPLAY_INST);
     DL_ADC12_enablePower(ADC12_0_INST);
 
@@ -112,9 +112,9 @@ SYSCONFIG_WEAK void SYSCFG_DL_GPIO_init(void)
 {
 
     DL_GPIO_initPeripheralOutputFunction(
-        GPIO_UART_BIUTEETH_IOMUX_TX, GPIO_UART_BIUTEETH_IOMUX_TX_FUNC);
+        GPIO_UART_BLUTEETH_IOMUX_TX, GPIO_UART_BLUTEETH_IOMUX_TX_FUNC);
     DL_GPIO_initPeripheralInputFunction(
-        GPIO_UART_BIUTEETH_IOMUX_RX, GPIO_UART_BIUTEETH_IOMUX_RX_FUNC);
+        GPIO_UART_BLUTEETH_IOMUX_RX, GPIO_UART_BLUTEETH_IOMUX_RX_FUNC);
     DL_GPIO_initPeripheralOutputFunction(
         GPIO_UART_SCREEN_DISPLAY_IOMUX_TX, GPIO_UART_SCREEN_DISPLAY_IOMUX_TX_FUNC);
     DL_GPIO_initPeripheralInputFunction(
@@ -195,12 +195,12 @@ SYSCONFIG_WEAK void SYSCFG_DL_TIMER_0_init(void) {
 
 
 
-static const DL_UART_Main_ClockConfig gUART_BIUTEETHClockConfig = {
+static const DL_UART_Main_ClockConfig gUART_BLUTEETHClockConfig = {
     .clockSel    = DL_UART_MAIN_CLOCK_BUSCLK,
     .divideRatio = DL_UART_MAIN_CLOCK_DIVIDE_RATIO_1
 };
 
-static const DL_UART_Main_Config gUART_BIUTEETHConfig = {
+static const DL_UART_Main_Config gUART_BLUTEETHConfig = {
     .mode        = DL_UART_MAIN_MODE_NORMAL,
     .direction   = DL_UART_MAIN_DIRECTION_TX_RX,
     .flowControl = DL_UART_MAIN_FLOW_CONTROL_NONE,
@@ -209,22 +209,32 @@ static const DL_UART_Main_Config gUART_BIUTEETHConfig = {
     .stopBits    = DL_UART_MAIN_STOP_BITS_ONE
 };
 
-SYSCONFIG_WEAK void SYSCFG_DL_UART_BIUTEETH_init(void)
+SYSCONFIG_WEAK void SYSCFG_DL_UART_BLUTEETH_init(void)
 {
-    DL_UART_Main_setClockConfig(UART_BIUTEETH_INST, (DL_UART_Main_ClockConfig *) &gUART_BIUTEETHClockConfig);
+    DL_UART_Main_setClockConfig(UART_BLUTEETH_INST, (DL_UART_Main_ClockConfig *) &gUART_BLUTEETHClockConfig);
 
-    DL_UART_Main_init(UART_BIUTEETH_INST, (DL_UART_Main_Config *) &gUART_BIUTEETHConfig);
+    DL_UART_Main_init(UART_BLUTEETH_INST, (DL_UART_Main_Config *) &gUART_BLUTEETHConfig);
     /*
      * Configure baud rate by setting oversampling and baud rate divisors.
      *  Target baud rate: 9600
      *  Actual baud rate: 9599.81
      */
-    DL_UART_Main_setOversampling(UART_BIUTEETH_INST, DL_UART_OVERSAMPLING_RATE_16X);
-    DL_UART_Main_setBaudRateDivisor(UART_BIUTEETH_INST, UART_BIUTEETH_IBRD_40_MHZ_9600_BAUD, UART_BIUTEETH_FBRD_40_MHZ_9600_BAUD);
+    DL_UART_Main_setOversampling(UART_BLUTEETH_INST, DL_UART_OVERSAMPLING_RATE_16X);
+    DL_UART_Main_setBaudRateDivisor(UART_BLUTEETH_INST, UART_BLUTEETH_IBRD_40_MHZ_9600_BAUD, UART_BLUTEETH_FBRD_40_MHZ_9600_BAUD);
 
 
+    /* Configure Interrupts */
+    DL_UART_Main_enableInterrupt(UART_BLUTEETH_INST,
+                                 DL_UART_MAIN_INTERRUPT_EOT_DONE);
 
-    DL_UART_Main_enable(UART_BIUTEETH_INST);
+    /* Configure DMA Transmit Event */
+    DL_UART_Main_enableDMATransmitEvent(UART_BLUTEETH_INST);
+    /* Configure FIFOs */
+    DL_UART_Main_enableFIFOs(UART_BLUTEETH_INST);
+    DL_UART_Main_setRXFIFOThreshold(UART_BLUTEETH_INST, DL_UART_RX_FIFO_LEVEL_1_2_FULL);
+    DL_UART_Main_setTXFIFOThreshold(UART_BLUTEETH_INST, DL_UART_TX_FIFO_LEVEL_1_2_EMPTY);
+
+    DL_UART_Main_enable(UART_BLUTEETH_INST);
 }
 
 static const DL_UART_Main_ClockConfig gUART_SCREEN_DISPLAYClockConfig = {
@@ -306,8 +316,24 @@ SYSCONFIG_WEAK void SYSCFG_DL_DMA_CH0_init(void)
     DL_DMA_setTransferSize(DMA, DMA_CH0_CHAN_ID, 1024);
     DL_DMA_initChannel(DMA, DMA_CH0_CHAN_ID , (DL_DMA_Config *) &gDMA_CH0Config);
 }
+static const DL_DMA_Config gDMA_CH1Config = {
+    .transferMode   = DL_DMA_SINGLE_TRANSFER_MODE,
+    .extendedMode   = DL_DMA_NORMAL_MODE,
+    .destIncrement  = DL_DMA_ADDR_UNCHANGED,
+    .srcIncrement   = DL_DMA_ADDR_INCREMENT,
+    .destWidth      = DL_DMA_WIDTH_BYTE,
+    .srcWidth       = DL_DMA_WIDTH_BYTE,
+    .trigger        = UART_BLUTEETH_INST_DMA_TRIGGER,
+    .triggerType    = DL_DMA_TRIGGER_TYPE_EXTERNAL,
+};
+
+SYSCONFIG_WEAK void SYSCFG_DL_DMA_CH1_init(void)
+{
+    DL_DMA_initChannel(DMA, DMA_CH1_CHAN_ID , (DL_DMA_Config *) &gDMA_CH1Config);
+}
 SYSCONFIG_WEAK void SYSCFG_DL_DMA_init(void){
     SYSCFG_DL_DMA_CH0_init();
+    SYSCFG_DL_DMA_CH1_init();
 }
 
 

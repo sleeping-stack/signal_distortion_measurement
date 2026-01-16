@@ -1,8 +1,7 @@
 # FIXED
 
-main.o: ../main.c \
- D:/workspace_ccs/signal_distortion_measurement/USER/adc.h \
- D:/workspace_ccs/signal_distortion_measurement/USER/global.h \
+USER/uart_bluteeth.o: ../USER/uart_bluteeth.c ../USER/uart_bluteeth.h \
+ ../USER/global.h \
  C:/ti/mspm0_sdk_2_00_01_00/source/third_party/CMSIS/DSP/Include/arm_math.h \
  C:/ti/mspm0_sdk_2_00_01_00/source/third_party/CMSIS/Core/Include/cmsis_compiler.h \
  C:/ti/mspm0_sdk_2_00_01_00/source/third_party/CMSIS/Core/Include/cmsis_gcc.h \
@@ -78,14 +77,9 @@ main.o: ../main.c \
  C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/dl_vref.h \
  C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/dl_wwdt.h \
  C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/m0p/dl_interrupt.h \
- C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/m0p/dl_systick.h \
- D:/workspace_ccs/signal_distortion_measurement/USER/calculate_thd.h \
- D:/workspace_ccs/signal_distortion_measurement/USER/clock.h \
- D:/workspace_ccs/signal_distortion_measurement/USER/fft.h \
- D:/workspace_ccs/signal_distortion_measurement/USER/uart_bluteeth.h \
- D:/workspace_ccs/signal_distortion_measurement/USER/uart_screen_display.h
-D:/workspace_ccs/signal_distortion_measurement/USER/adc.h:
-D:/workspace_ccs/signal_distortion_measurement/USER/global.h:
+ C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/m0p/dl_systick.h
+../USER/uart_bluteeth.h:
+../USER/global.h:
 C:/ti/mspm0_sdk_2_00_01_00/source/third_party/CMSIS/DSP/Include/arm_math.h:
 C:/ti/mspm0_sdk_2_00_01_00/source/third_party/CMSIS/Core/Include/cmsis_compiler.h:
 C:/ti/mspm0_sdk_2_00_01_00/source/third_party/CMSIS/Core/Include/cmsis_gcc.h:
@@ -162,8 +156,3 @@ C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/dl_vref.h:
 C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/dl_wwdt.h:
 C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/m0p/dl_interrupt.h:
 C:/ti/mspm0_sdk_2_00_01_00/source/ti/driverlib/m0p/dl_systick.h:
-D:/workspace_ccs/signal_distortion_measurement/USER/calculate_thd.h:
-D:/workspace_ccs/signal_distortion_measurement/USER/clock.h:
-D:/workspace_ccs/signal_distortion_measurement/USER/fft.h:
-D:/workspace_ccs/signal_distortion_measurement/USER/uart_bluteeth.h:
-D:/workspace_ccs/signal_distortion_measurement/USER/uart_screen_display.h:

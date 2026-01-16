@@ -16,8 +16,8 @@ ORDERED_OBJS += \
 "./USER/adc.o" \
 "./USER/calculate_thd.o" \
 "./USER/clock.o" \
-"./USER/data_packet.o" \
 "./USER/fft.o" \
+"./USER/uart_bluteeth.o" \
 "./USER/uart_screen_display.o" \
 $(GEN_CMDS__FLAG) \
 -Wl,-ldevice.cmd.genlibs \
@@ -151,8 +151,8 @@ signal_distortion_measurement.out: $(OBJS) $(GEN_CMDS)
 # Other Targets
 clean:
 	-$(RM) $(GEN_MISC_FILES__QUOTED)$(GEN_FILES__QUOTED)$(EXE_OUTPUTS__QUOTED)
-	-$(RM) "main.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "USER\adc.o" "USER\calculate_thd.o" "USER\clock.o" "USER\data_packet.o" "USER\fft.o" "USER\uart_screen_display.o" 
-	-$(RM) "main.d" "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" "USER\adc.d" "USER\calculate_thd.d" "USER\clock.d" "USER\data_packet.d" "USER\fft.d" "USER\uart_screen_display.d" 
+	-$(RM) "main.o" "ti_msp_dl_config.o" "startup_mspm0g350x_ticlang.o" "USER\adc.o" "USER\calculate_thd.o" "USER\clock.o" "USER\fft.o" "USER\uart_bluteeth.o" "USER\uart_screen_display.o" 
+	-$(RM) "main.d" "ti_msp_dl_config.d" "startup_mspm0g350x_ticlang.d" "USER\adc.d" "USER\calculate_thd.d" "USER\clock.d" "USER\fft.d" "USER\uart_bluteeth.d" "USER\uart_screen_display.d" 
 	-@echo 'Finished clean'
 	-@echo ' '
 

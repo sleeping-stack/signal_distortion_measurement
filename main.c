@@ -1,13 +1,12 @@
 #include "adc.h"
 #include "calculate_thd.h"
-#include "data_packet.h"
+#include "clock.h"
 #include "fft.h"
 #include "global.h"
+#include "uart_bluteeth.h"
 #include "uart_screen_display.h"
-#include "clock.h"
 
 void clear_sampling_data(void);
-void bluteeth_transmit_data(float thd);
 void process_once(void);
 
 volatile bool if_process = false;
@@ -17,6 +16,7 @@ int main(void)
     SYSCFG_DL_init();
     adc_init();
     uart_init();
+    uart_bluteeth_init();
 
     while (1) {
         if (process_flag) {
@@ -46,25 +46,6 @@ void clear_sampling_data(void)
 
     // 清零峰值信息相关变量
     clear_peaks_data();
-}
-
-void bluteeth_transmit_data(float thd)
-{
-    uint8_t buffer[29]  = {0};
-    int16_t short_data  = 0;
-    float float_data[6] = {0};
-    float_data[0]       = thd;
-    for (uint16_t i = 1; i < 6; i++) {
-        float_data[i] = normalized_ampl[i - 1];
-    }
-
-    for (uint16_t i = 0; i < ADC_SAMPLE_SIZE; i++) {
-        short_data = (int16_t)gADCSamples[i];
-        pack_short_and_6floats(short_data, float_data, buffer);
-        for (uint16_t i = 0; i < 29; i++) {
-            DL_UART_Main_transmitDataBlocking(UART_BIUTEETH_INST, buffer[i]);
-        }
-    }
 }
 
 void process_once(void)
@@ -98,5 +79,5 @@ void process_once(void)
     find_peak_info();
     float thd = calculate_thd();
     // bluteeth_transmit_data(thd);
-    uart_send_display_data(thd,start_time);
+    uart_send_display_data(thd, start_time);
 }
