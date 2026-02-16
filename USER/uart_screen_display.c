@@ -4,7 +4,7 @@ uint8_t rx_buffer[7];
 uint16_t rx_data_cnt = 0;
 bool process_flag    = false;
 
-void uart_init(void)
+void uart_screen_display_init(void)
 {
     NVIC_ClearPendingIRQ(UART_SCREEN_DISPLAY_INST_INT_IRQN);
     NVIC_EnableIRQ(UART_SCREEN_DISPLAY_INST_INT_IRQN);

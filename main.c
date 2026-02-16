@@ -15,7 +15,7 @@ int main(void)
 {
     SYSCFG_DL_init();
     adc_init();
-    uart_init();
+    uart_screen_display_init();
     uart_bluteeth_init();
 
     while (1) {

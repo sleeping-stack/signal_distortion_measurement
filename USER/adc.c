@@ -47,7 +47,7 @@ void ADC12_0_INST_IRQHandler(void)
  */
 void set_sample_freq(uint32_t sample_freq, GPTIMER_Regs *gptimer)
 {
-    DL_Timer_setLoadValue(gptimer, CPUCLK_FREQ / sample_freq);
+    DL_Timer_setLoadValue(gptimer, (uint32_t)(CPUCLK_FREQ * 1.0 / sample_freq));
 }
 
 /**

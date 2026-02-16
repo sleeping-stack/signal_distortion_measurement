@@ -6,7 +6,7 @@
 #include "clock.h"
 #include "global.h"
 
-void uart_init(void);
+void uart_screen_display_init(void);
 int button_cmd(void);
 void uart_send_string(char* str);
 void uart_send_display_data(float thd, uint32_t start_time);
